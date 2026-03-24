@@ -59,3 +59,93 @@ mvn spring-boot:run
 ```
 
 App starts at: `http://localhost:8080`
+
+## Test the API
+
+Once the app is running, test these endpoints using **curl** or **Postman**:
+
+### Get all products
+```bash
+curl http://localhost:8080/api/products
+```
+Response: JSON array of all products (3 seed products from data.sql)
+
+### Get product by ID
+```bash
+curl http://localhost:8080/api/products/1
+```
+Response: Single product JSON object
+
+### Create a new product
+```bash
+curl -X POST http://localhost:8080/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Galaxy S24","description":"Samsung flagship phone","price":899.99}'
+```
+Response: HTTP 201 + created product with generated ID
+
+### Delete a product
+```bash
+curl -X DELETE http://localhost:8080/api/products/1
+```
+Response: HTTP 204 No Content (success, no body)
+
+### Get a product that doesn't exist (error handling)
+```bash
+curl http://localhost:8080/api/products/999
+```
+Response: HTTP 404 + `{"status":404, "error":"Not Found", "message":"Product not found with id 999"}`
+
+## Project Structure
+
+```
+src/main/java/com/example/springbootfromzero/
+├── SpringbootFromZeroApplication.java   ← Entry point (Step 1)
+├── domain/
+│   └── Product.java                     ← JPA Entity - maps to DB table (Step 2)
+├── repository/
+│   └── ProductRepository.java           ← Database access layer (Step 3)
+├── dto/
+│   └── ProductDTO.java                  ← API response shape (Step 4)
+├── service/
+│   ├── ProductService.java              ← Business logic interface (Step 5)
+│   └── impl/
+│       └── ProductServiceImpl.java      ← Business logic implementation (Step 6)
+├── controller/
+│   └── ProductController.java           ← REST endpoints (Step 7)
+└── exception/
+    ├── ResourceNotFoundException.java   ← Custom 404 exception (Step 6)
+    └── GlobalExceptionHandler.java      ← Global error handling (Step 8)
+```
+
+## Architecture (Request Flow)
+
+```
+Client (Browser/Postman/curl)
+    ↓ HTTP Request (GET /api/products)
+Controller (ProductController)
+    ↓ calls service method
+Service (ProductServiceImpl)
+    ↓ calls repository method
+Repository (ProductRepository)
+    ↓ JPA generates SQL
+Database (MySQL)
+    ↑ returns rows
+Repository → Entity (Product)
+    ↑ returns entity
+Service → converts to DTO (ProductDTO)
+    ↑ returns DTO
+Controller → wraps in ResponseEntity
+    ↑ HTTP Response (JSON)
+Client receives JSON
+```
+
+## Next Steps (What to Learn After This)
+
+1. **Validation** — Add `@Valid`, `@NotNull`, `@Size` to validate input
+2. **Update endpoint** — Add `PUT /api/products/{id}` to update a product
+3. **Pagination** — Use `Pageable` for large datasets
+4. **Model mapping** — Use MapStruct instead of manual entity↔DTO conversion
+5. **Database migrations** — Use Flyway or Liquibase instead of `ddl-auto=update`
+6. **Security** — Add Spring Security for authentication
+7. **Testing** — Write unit tests with `@DataJpaTest` and `@SpringBootTest`
