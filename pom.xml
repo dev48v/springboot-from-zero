@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    =============================================
+    STEP 1: Project Setup - pom.xml
+    =============================================
+    This is the Maven build file. It defines:
+    - Your project metadata (groupId, artifactId, version)
+    - The Spring Boot parent (gives you default configs)
+    - All dependencies (libraries) your project needs
+
+    KEY CONCEPTS:
+    - Maven manages your project's build lifecycle and dependencies
+    - The <parent> tag inherits Spring Boot's default configuration
+    - Each <dependency> is a library that Spring Boot will auto-configure for you
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Boot Parent: provides default dependency versions and plugin configs -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/> <!-- lookup parent from Maven repository -->
+    </parent>
+
+    <!-- Your project's identity -->
+    <groupId>com.example</groupId>
+    <artifactId>springboot-from-zero</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>springboot-from-zero</name>
+    <description>A step-by-step Spring Boot tutorial - learn by building a Product CRUD API</description>
+
+    <properties>
+        <!-- We use Java 17 (LTS version, widely supported) -->
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            spring-boot-starter-web:
+            - Adds Spring MVC (for building REST APIs)
+            - Includes embedded Tomcat server (no need to install Tomcat separately!)
+            - Adds JSON serialization (Jackson) so your objects become JSON automatically
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-data-jpa:
+            - Adds JPA (Java Persistence API) for database operations
+            - Includes Hibernate as the JPA implementation
+            - Lets you use Repository interfaces instead of writing SQL manually
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            mysql-connector-j:
+            - The JDBC driver that lets Java talk to MySQL
+            - Without this, your app can't connect to a MySQL database
+            - "runtime" scope = only needed when the app runs, not at compile time
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            lombok:
+            - Reduces boilerplate code (getters, setters, constructors)
+            - @Data = auto-generates getters, setters, toString, equals, hashCode
+            - @NoArgsConstructor / @AllArgsConstructor = auto-generates constructors
+            - "optional" = other projects depending on this don't inherit Lombok
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            spring-boot-devtools:
+            - Auto-restarts your app when you change code (hot reload)
+            - Saves you from manually stopping and starting the app
+            - "runtime" scope = only active during development
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- This plugin lets you run: mvn spring-boot:run -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude Lombok from the final JAR (it's only needed at compile time) -->
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
